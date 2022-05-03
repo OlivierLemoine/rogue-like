@@ -150,10 +150,8 @@ impl Dungeon {
                 }
                 Possibility::Terrain => {}
                 Possibility::Door => {
-                    if above.map(|v| *v == Possibility::Terrain).unwrap_or(false)
-                        && below.map(|v| *v == Possibility::Terrain).unwrap_or(false)
-                    {
-                    }
+                    *above = Possibility::Terrain;
+                    *below = Possibility::Terrain;
                 }
                 Possibility::Monster => {
                     if self.content[x][y - 1] != Possibility::Terrain {
