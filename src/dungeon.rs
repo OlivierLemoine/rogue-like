@@ -89,7 +89,7 @@ impl Tile {
         self.raw = 1 << value as u8;
     }
 
-    pub fn overwrite(&mut self, value: Possibility) {
+    pub unsafe fn overwrite(&mut self, value: Possibility) {
         self.raw = 1 << value as u8;
     }
 

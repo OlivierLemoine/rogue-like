@@ -1,10 +1,12 @@
+use crate::Collider;
 use bevy::prelude::*;
 
-#[derive(Bundle)]
+#[derive(Bundle, Default)]
 pub struct TerrainTileBundle {
     #[bundle]
     sprite_sheet_bundle: SpriteSheetBundle,
     tile: TerrainTile,
+    collider: Collider,
 }
 impl TerrainTileBundle {
     pub fn new(atlas_handle: Handle<TextureAtlas>, atlas_idx: usize, at: Vec3) -> Self {
@@ -16,17 +18,19 @@ impl TerrainTileBundle {
                     ..Default::default()
                 },
                 transform: Transform {
-                    translation: at,
+                    translation: at * 3.,
+                    scale: Vec3::splat(3.),
                     ..Default::default()
                 },
                 ..Default::default()
             },
-            tile: TerrainTile {},
+            collider: Collider {size: Vec2::splat(16. * 3.)},
+            ..Default::default()
         }
     }
 }
 
-#[derive(Component)]
+#[derive(Component, Default)]
 pub struct TerrainTile {}
 
 pub fn terrain_rules_set() {}

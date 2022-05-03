@@ -3,7 +3,7 @@ use bevy_inspector_egui::Inspectable;
 
 use crate::AppState;
 
-#[derive(Inspectable, Component)]
+#[derive(Inspectable, Component, Default)]
 pub struct Animator {
     animations: Vec<Vec<usize>>,
     curr_animation: usize,
@@ -34,9 +34,10 @@ impl Animator {
 
     pub fn animate(mut query: Query<(&mut Animator, &mut TextureAtlasSprite)>) {
         for (mut animator, mut sprite) in query.iter_mut() {
-            animator.curr_sprite =
-                (animator.curr_sprite + 1) % animator.animations[animator.curr_animation].len();
-            sprite.index = animator.curr_sprite;
+            let anim = &animator.animations[animator.curr_animation];
+            let next_sprite = (animator.curr_sprite + 1) % anim.len();
+            sprite.index = anim[next_sprite];
+            animator.curr_sprite = next_sprite;
             sprite.flip_x = animator.flip_x;
         }
     }
