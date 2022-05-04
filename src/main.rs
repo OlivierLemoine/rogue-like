@@ -1,17 +1,14 @@
 mod animator;
-mod collider;
 mod dungeon;
 mod monster;
 mod player;
-mod rigidbody;
 
 use animator::*;
 use bevy::{asset::LoadState, prelude::*};
 use bevy_inspector_egui::{RegisterInspectable, WorldInspectorPlugin};
-use collider::*;
+use bevy_rapier2d::prelude::*;
 use monster::*;
 use player::*;
-use rigidbody::*;
 
 fn main() {
     App::new()
@@ -19,6 +16,10 @@ fn main() {
         .insert_resource(Msaa { samples: 4 })
         .add_plugins(DefaultPlugins)
         .add_plugin(WorldInspectorPlugin::new())
+        .add_plugin(RapierDebugRenderPlugin::default())
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
+            16. * 3.,
+        ))
         // Resources
         .init_resource::<SpriteHandles>()
         .add_state(AppState::LoadingGameSprites)
@@ -33,15 +34,12 @@ fn main() {
         // Systems
         .add_system_set(Animator::system_set())
         .add_system_set(Player::system_set())
-        .add_system_set(Collider::system_set())
-        .add_system_set(RigidBody::system_set())
         .add_system_set(dungeon::Dungeon::system_set())
         .add_system(bevy::input::system::exit_on_esc_system)
         // Inspect
         .register_inspectable::<Player>()
         .register_inspectable::<Monster>()
         .register_inspectable::<Animator>()
-        .register_inspectable::<Collider>()
         // Run
         .run();
 }

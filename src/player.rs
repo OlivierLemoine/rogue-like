@@ -1,8 +1,9 @@
-use crate::{Animator, AppState, Collider, RigidBody};
+use crate::{Animator, AppState};
 use bevy::{core::FixedTimestep, prelude::*};
 use bevy_inspector_egui::Inspectable;
+use bevy_rapier2d::prelude::*;
 
-#[derive(Bundle, Default)]
+#[derive(Bundle)]
 pub struct PlayerBundle {
     #[bundle]
     sprite_bundle: SpriteSheetBundle,
@@ -10,6 +11,17 @@ pub struct PlayerBundle {
     animator: Animator,
     collider: Collider,
     rigidbody: RigidBody,
+}
+impl Default for PlayerBundle {
+    fn default() -> Self {
+        PlayerBundle {
+            sprite_bundle: SpriteSheetBundle::default(),
+            player: Player::default(),
+            animator: Animator::default(),
+            collider: Collider::cuboid(16., 16.),
+            rigidbody: RigidBody::Dynamic,
+        }
+    }
 }
 impl PlayerBundle {
     pub fn new(atlas: Handle<TextureAtlas>) -> Self {
@@ -22,9 +34,6 @@ impl PlayerBundle {
                     ..Default::default()
                 },
                 ..Default::default()
-            },
-            collider: Collider {
-                size: Vec2::new(16., 16.),
             },
             animator: Animator::new(vec![vec![0, 1, 2, 3], vec![4, 5, 6, 7], vec![8, 9, 10, 11]]),
             ..Default::default()
