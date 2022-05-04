@@ -18,11 +18,12 @@ enum Possibility {
     Torch,
     Chest,
     FlyingMonster,
+    AirPath,
 }
 
 impl Distribution<Possibility> for Standard {
     fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Possibility {
-        match rng.gen_range(0..5) {
+        match rng.gen_range(0..=7) {
             1 => Possibility::Terrain,
             2 => Possibility::Door,
             3 => Possibility::Monster,
@@ -45,6 +46,7 @@ impl TryFrom<Tile> for Possibility {
             0b0001_0000 => Ok(Possibility::Door),
             0b0010_0000 => Ok(Possibility::Chest),
             0b0100_0000 => Ok(Possibility::FlyingMonster),
+            0b1000_0000 => Ok(Possibility::AirPath),
             _ => Err(()),
         }
     }
@@ -71,7 +73,7 @@ impl SubAssign<Possibility> for Tile {
 impl Default for Tile {
     ///! Verifier la taille de l'enum
     fn default() -> Self {
-        Tile { raw: 0b111111 }
+        Tile { raw: 0b1111_1111 }
     }
 }
 
@@ -237,6 +239,7 @@ impl Dungeon {
 
         if self[this].collapsed() {
             match self[this].try_into().unwrap() {
+                Possibility::AirPath => {}
                 Possibility::Air => {}
                 Possibility::Terrain => {}
                 Possibility::Door => {
@@ -352,11 +355,12 @@ impl Dungeon {
                 .filter_map(|&tile| Possibility::try_from(tile).ok())
                 .enumerate()
                 .for_each(|(y, tile)| match tile {
+                    Possibility::AirPath => (),
                     Possibility::Air => (),
                     Possibility::Terrain => {
                         commands.spawn_bundle(TerrainTileBundle::new(
                             dungeon.terrain_atlas.clone(),
-                            1,
+                            27,
                             Vec3::new(x as f32 * 16., y as f32 * 16., 0.),
                         ));
                     }
