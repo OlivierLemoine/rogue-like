@@ -13,7 +13,7 @@ impl Default for TerrainTileBundle {
         TerrainTileBundle {
             sprite_sheet_bundle: SpriteSheetBundle::default(),
             tile: TerrainTile {},
-            collider: Collider::cuboid(16. * 3., 16. * 3.),
+            collider: Collider::cuboid(8., 8.),
         }
     }
 }
@@ -27,8 +27,7 @@ impl TerrainTileBundle {
                     ..Default::default()
                 },
                 transform: Transform {
-                    translation: at * 3.,
-                    scale: Vec3::splat(3.),
+                    translation: at,
                     ..Default::default()
                 },
                 ..Default::default()

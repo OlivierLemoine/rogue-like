@@ -1,5 +1,5 @@
 use crate::{Animator, AppState};
-use bevy::{core::FixedTimestep, prelude::*};
+use bevy::{core::FixedTimestep, prelude::*, sprite::Anchor};
 use bevy_inspector_egui::Inspectable;
 use bevy_rapier2d::prelude::*;
 
@@ -11,6 +11,7 @@ pub struct PlayerBundle {
     animator: Animator,
     collider: Collider,
     rigidbody: RigidBody,
+    locked_axis: LockedAxes,
 }
 impl Default for PlayerBundle {
     fn default() -> Self {
@@ -18,8 +19,9 @@ impl Default for PlayerBundle {
             sprite_bundle: SpriteSheetBundle::default(),
             player: Player::default(),
             animator: Animator::default(),
-            collider: Collider::cuboid(16., 16.),
+            collider: Collider::cuboid(32., 32.),
             rigidbody: RigidBody::Dynamic,
+            locked_axis: LockedAxes::ROTATION_LOCKED,
         }
     }
 }
@@ -28,9 +30,13 @@ impl PlayerBundle {
         PlayerBundle {
             sprite_bundle: SpriteSheetBundle {
                 texture_atlas: atlas,
+                sprite: TextureAtlasSprite {
+                    anchor: Anchor::Custom(Vec2::new(0., -0.28)),
+                    ..Default::default()
+                },
                 transform: Transform {
                     translation: Vec3::new(16., 16. * 6. * 3. + 10., 0.),
-                    scale: Vec3::new(0.9, 0.9, 1.),
+                    scale: Vec3::new(0.5, 0.5, 1.),
                     ..Default::default()
                 },
                 ..Default::default()

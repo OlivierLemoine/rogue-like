@@ -338,15 +338,16 @@ impl Dungeon {
         // }
     }
 
-    pub fn generate(mut commands: Commands, mut query: Query<&mut Dungeon>) {
+    pub fn generate(mut commands: Commands, mut query: Query<(Entity, &mut Dungeon)>) {
         if query.is_empty() {
             return;
         }
 
-        let mut dungeon = query.single_mut();
+        let (entity, mut dungeon) = query.single_mut();
         if dungeon.has_generate {
             return;
         }
+
         dungeon.has_generate = true;
         dungeon.collapse(30);
         dungeon.content.iter().enumerate().for_each(|(x, column)| {
@@ -358,11 +359,13 @@ impl Dungeon {
                     Possibility::AirPath => (),
                     Possibility::Air => (),
                     Possibility::Terrain => {
-                        commands.spawn_bundle(TerrainTileBundle::new(
-                            dungeon.terrain_atlas.clone(),
-                            27,
-                            Vec3::new(x as f32 * 16., y as f32 * 16., 0.),
-                        ));
+                        commands.entity(entity).with_children(|b| {
+                            b.spawn_bundle(TerrainTileBundle::new(
+                                dungeon.terrain_atlas.clone(),
+                                27,
+                                Vec3::new(x as f32 * 8., y as f32 * 8., 0.),
+                            ));
+                        });
                     }
                     Possibility::Door => (),
                     Possibility::Monster => (),
@@ -371,10 +374,5 @@ impl Dungeon {
                     Possibility::FlyingMonster => (),
                 });
         });
-        commands.spawn_bundle(TerrainTileBundle::new(
-            dungeon.terrain_atlas.clone(),
-            1,
-            Vec3::new(0., 0., 0.),
-        ));
     }
 }

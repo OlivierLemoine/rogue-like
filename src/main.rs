@@ -14,12 +14,14 @@ fn main() {
     App::new()
         // Builtins
         .insert_resource(Msaa { samples: 4 })
+        .insert_resource(WindowDescriptor {
+            title: "Rogue Like".to_string(),
+            ..default()
+        })
         .add_plugins(DefaultPlugins)
         .add_plugin(WorldInspectorPlugin::new())
         .add_plugin(RapierDebugRenderPlugin::default())
-        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(
-            16. * 3.,
-        ))
+        .add_plugin(RapierPhysicsPlugin::<NoUserData>::pixels_per_meter(8.))
         // Resources
         .init_resource::<SpriteHandles>()
         .add_state(AppState::LoadingGameSprites)
@@ -97,7 +99,8 @@ fn setup(
     let terrain_atlas_handle = texture_atlases.add(terrain_atlas);
     commands
         .spawn()
-        .insert(dungeon::Dungeon::new(terrain_atlas_handle));
+        .insert(dungeon::Dungeon::new(terrain_atlas_handle))
+        .insert(Name::new("Dungeon"));
 
     // Player
     let mut player_atlas_builder = TextureAtlasBuilder::default();
@@ -108,7 +111,9 @@ fn setup(
     }
     let player_atlas = player_atlas_builder.finish(&mut textures).unwrap();
     let player_atlas_handle = texture_atlases.add(player_atlas);
-    commands.spawn_bundle(PlayerBundle::new(player_atlas_handle));
+    commands
+        .spawn_bundle(PlayerBundle::new(player_atlas_handle))
+        .insert(Name::new("Player"));
 
     // Others
     commands.spawn_bundle(OrthographicCameraBundle::new_2d());
