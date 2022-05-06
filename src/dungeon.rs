@@ -9,6 +9,43 @@ pub use terrain::*;
 
 const VERTICAL_SIZE: usize = 16;
 
+const TILE_SET_SIZE: usize = 4;
+
+const SPRITE_SIZE: f32 = 16.;
+
+struct TileSet {
+    tiles: [[Possibility; TILE_SET_SIZE]; TILE_SET_SIZE],
+}
+
+const TILE_SETS: &[TileSet] = &[TileSet {
+    tiles: [
+        [
+            Possibility::Terrain,
+            Possibility::Air,
+            Possibility::Air,
+            Possibility::Terrain,
+        ],
+        [
+            Possibility::Air,
+            Possibility::Air,
+            Possibility::Air,
+            Possibility::Air,
+        ],
+        [
+            Possibility::Air,
+            Possibility::Air,
+            Possibility::Air,
+            Possibility::Air,
+        ],
+        [
+            Possibility::Terrain,
+            Possibility::Air,
+            Possibility::Air,
+            Possibility::Terrain,
+        ],
+    ],
+}];
+
 #[derive(Clone, Copy)]
 enum Possibility {
     Air,
@@ -349,30 +386,55 @@ impl Dungeon {
         }
 
         dungeon.has_generate = true;
-        dungeon.collapse(30);
-        dungeon.content.iter().enumerate().for_each(|(x, column)| {
-            column
-                .into_iter()
-                .filter_map(|&tile| Possibility::try_from(tile).ok())
-                .enumerate()
-                .for_each(|(y, tile)| match tile {
-                    Possibility::AirPath => (),
-                    Possibility::Air => (),
-                    Possibility::Terrain => {
-                        commands.entity(entity).with_children(|b| {
-                            b.spawn_bundle(TerrainTileBundle::new(
-                                dungeon.terrain_atlas.clone(),
-                                27,
-                                Vec3::new(x as f32 * 8., y as f32 * 8., 0.),
-                            ));
-                        });
+        commands.entity(entity).with_children(|d| {
+            for origin_x in 0..4 {
+                for origin_y in 0..4 {
+                    for x in 0..TILE_SET_SIZE {
+                        for y in 0..TILE_SET_SIZE {
+                            match TILE_SETS[0].tiles[x][y] {
+                                Possibility::Terrain => {
+                                    let x = origin_x as f32 * SPRITE_SIZE * TILE_SET_SIZE as f32
+                                        + x as f32 * SPRITE_SIZE;
+                                    let y = origin_y as f32 * SPRITE_SIZE * TILE_SET_SIZE as f32
+                                        + y as f32 * SPRITE_SIZE;
+
+                                    d.spawn_bundle(TerrainTileBundle::new(
+                                        dungeon.terrain_atlas.clone(),
+                                        27,
+                                        Vec3::new(x, y, 0.),
+                                    ));
+                                }
+                                _ => {}
+                            }
+                        }
                     }
-                    Possibility::Door => (),
-                    Possibility::Monster => (),
-                    Possibility::Torch => (),
-                    Possibility::Chest => (),
-                    Possibility::FlyingMonster => (),
-                });
+                }
+            }
         });
+        //dungeon.collapse(30);
+        //dungeon.content.iter().enumerate().for_each(|(x, column)| {
+        //    column
+        //        .into_iter()
+        //        .filter_map(|&tile| Possibility::try_from(tile).ok())
+        //        .enumerate()
+        //        .for_each(|(y, tile)| match tile {
+        //            Possibility::AirPath => (),
+        //            Possibility::Air => (),
+        //            Possibility::Terrain => {
+        //                commands.entity(entity).with_children(|b| {
+        //                    b.spawn_bundle(TerrainTileBundle::new(
+        //                        dungeon.terrain_atlas.clone(),
+        //                        27,
+        //                        Vec3::new(x as f32 * 8., y as f32 * 8., 0.),
+        //                    ));
+        //                });
+        //            }
+        //            Possibility::Door => (),
+        //            Possibility::Monster => (),
+        //            Possibility::Torch => (),
+        //            Possibility::Chest => (),
+        //            Possibility::FlyingMonster => (),
+        //        });
+        //});
     }
 }

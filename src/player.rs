@@ -36,7 +36,7 @@ impl PlayerBundle {
                 },
                 transform: Transform {
                     translation: Vec3::new(16., 16. * 6. * 3. + 10., 0.),
-                    scale: Vec3::new(0.5, 0.5, 1.),
+                    scale: Vec3::new(0.4, 0.4, 1.),
                     ..Default::default()
                 },
                 ..Default::default()

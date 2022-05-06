@@ -98,7 +98,7 @@ fn setup(
     let terrain_atlas = TextureAtlas::from_grid(terrain_handle, Vec2::new(16., 16.), 13, 8);
     let terrain_atlas_handle = texture_atlases.add(terrain_atlas);
     commands
-        .spawn()
+        .spawn_bundle(SpriteBundle::default())
         .insert(dungeon::Dungeon::new(terrain_atlas_handle))
         .insert(Name::new("Dungeon"));
 
